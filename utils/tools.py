@@ -4,29 +4,6 @@ import librosa.display
 import numpy as np
 from matplotlib import pyplot as plt
 
-# DATA_PATH = './data/train/spectrogram/'
-
-# filenames = os.listdir(DATA_PATH)
-# print(filenames)
-
-
-# data = np.load(DATA_PATH+'noisy_voice_pha_db.npy', allow_pickle=True)
-# plt.imshow(data[0],extent=[0,4.2,0,48000], cmap='jet', vmin=-100, vmax=0, origin='lower', aspect='auto')
-# plt.colorbar()
-# plt.title('noise_amp_db.npy')
-
-# # fig, axs = plt.subplots(2, 3)
-# # index = 0
-# # for i in range(2):
-# #     for j in range(3):
-# #         data = np.load(DATA_PATH+filenames[index], allow_pickle=True)
-# #         axs[i, j].imshow(data[0],extent=[0,4.2,0,48000], cmap='jet', vmin=-100, vmax=0, origin='lower', aspect='auto')
-# #         # axs[i, j].colorbar()
-# #         axs[i, j].set_title(filenames[index])
-# #         index += 1
-
-# plt.show()
-
 def change_name(path):
     """Change the duplicate file name"""
     os.chdir(path)

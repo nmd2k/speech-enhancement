@@ -5,7 +5,6 @@ librosa>=0.8.1
 
 # dataset =====
 # scikit-image>=0.18.1
-pandas
 
 # log experiment
 wandb

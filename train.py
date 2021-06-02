@@ -40,7 +40,7 @@ def train(model, device, trainloader, optimizer, loss_function):
     mask_list, iou = [], []
     for i, (input, mask) in enumerate(trainloader):
         # load data into cuda
-        input, mask = input.to(device), mask.to(device)
+        input, mask = input.to(device, dtype=torch.float), mask.to(device, dtype=torch.float)
 
         # forward
         predict = model(input)
@@ -75,7 +75,7 @@ def test(model, device, testloader, loss_function, best_iou):
     mask_list, iou  = [], []
     with torch.no_grad():
         for i, (input, mask) in enumerate(testloader):
-            input, mask = input.to(device), mask.to(device)
+            input, mask = input.to(device, dtype=torch.float), mask.to(device, dtype=torch.float)
 
             predict = model(input)
             loss = loss_function(predict, mask)

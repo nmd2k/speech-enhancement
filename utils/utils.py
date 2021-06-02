@@ -7,38 +7,40 @@ import matplotlib.pyplot as plt
 from torchvision import transforms
 
 def show_dataset(dataset, n_sample=4):
-    """Visualize dataset with n_sample"""
-    fig = plt.figure()
+    pass
+    # """Visualize dataset with n_sample"""
+    # fig = plt.figure()
 
-    # show image
-    for i in range(n_sample):
-        image, mask = dataset[i]
-        image = transforms.ToPILImage()(image)
-        mask = transforms.ToPILImage()(mask)
-        print(i, image.size)
+    # # show image
+    # for i in range(n_sample):
+    #     image, mask = dataset[i]
+    #     image = transforms.ToPILImage()(image)
+    #     mask = transforms.ToPILImage()(mask)
+    #     print(i, image.size)
 
-        plt.tight_layout()
-        ax = plt.subplot(2, n_sample, i + 1)
-        ax.set_title('Sample #{}'.format(i))
-        ax.axis('off')
+    #     plt.tight_layout()
+    #     ax = plt.subplot(2, n_sample, i + 1)
+    #     ax.set_title('Sample #{}'.format(i))
+    #     ax.axis('off')
 
-        plt.imshow(image, cmap="Greys")
-        plt.imshow(mask, alpha=0.3, cmap="OrRd")
+    #     plt.imshow(image, cmap="Greys")
+    #     plt.imshow(mask, alpha=0.3, cmap="OrRd")
 
-        if i == n_sample-1:
-            plt.show()
-            break
+    #     if i == n_sample-1:
+    #         plt.show()
+    #         break
         
 def show_image_mask(image, mask):
-    fig, ax = plt.subplots()
+    pass
+    # fig, ax = plt.subplots()
 
-    image = transforms.ToPILImage()(image)
-    mask = transforms.ToPILImage()(mask)
+    # image = transforms.ToPILImage()(image)
+    # mask = transforms.ToPILImage()(mask)
 
-    ax.imshow(image, cmap="Greys")
-    ax.imshow(mask, alpha=0.3, cmap="OrRd")
+    # ax.imshow(image, cmap="Greys")
+    # ax.imshow(mask, alpha=0.3, cmap="OrRd")
 
-    plt.show()
+    # plt.show()
 
 def labels():
   l = {}
@@ -55,9 +57,6 @@ def normtensor(tensor):
     return tensor
 
 def wandb_mask(bg_imgs, pred_masks, true_masks):
-    # bg_imgs    = [np.array(transforms.ToPILImage()(image)) for image in bg_imgs]
-    # pred_masks = [np.array(transforms.ToPILImage()(image)) for image in pred_masks]
-    # true_masks = [np.array(transforms.ToPILImage()(image)) for image in true_masks]
 
     return wandb.Image(bg_imgs, masks={
         "predictions" : {

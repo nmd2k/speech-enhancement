@@ -2,6 +2,7 @@ from PIL import Image
 from model.config import *
 import torch
 import os
+import numpy as np
 from torch.utils.data import Dataset, DataLoader, dataloader, random_split
 from torchvision import transforms
 
@@ -16,28 +17,48 @@ class SpeechDataset(Dataset):
                 mentioned in the paper. Only applied on the train split.
         """
 
-        self.root_dir   = root_dir
-        self.ids        = os.listdir(root_dir)
+        #load noisy voice & clean voice spectrograms created by data_creation mode
+        self.image      = np.load(root_dir +'noisy_voice_amp_db.npy')
+        clean_voice     = np.load(root_dir +'voice_amp_db.npy')
+
+        # mask is created from noisy voice substract to clean voice
+        self.mask       = self.image-clean_voice
+        
+        # normalize to -1 and 1
+        self.image      = scaled_in(self.image)
+        self.mask       = scaled_ou(self.mask)
         
         if transform is None:
-            self.transfrom = transforms.Compose([transforms.Resize((INPUT_SIZE, INPUT_SIZE)), 
-                                                  transforms.Grayscale(), 
-                                                  transforms.ToTensor(),])
+            self.transfrom = transforms.Compose([transforms.ToTensor(),])
 
     def __len__(self):
-        return len(self.ids)
+        return len(self.image)
 
     def __getitem__(self, index):
-        id    = self.ids[index]
-
-        # file should be unzipped
-        image = Image.open(self.root_dir+IMAGE_PATH+id+'.png')
-        mask  = Image.open(self.root_dir+MASK_PATH+id+'.png')
-    
-        image = self.transfrom(image)
-        mask  = self.transfrom(mask)
+        image = self.transfrom(self.image[index])
+        mask  = self.transfrom(self.mask[index])
 
         return image, mask
+
+def scaled_in(matrix_spec):
+    "global scaling apply to noisy voice spectrograms (scale between -1 and 1)"
+    matrix_spec = (matrix_spec + 46)/50
+    return matrix_spec
+
+def scaled_ou(matrix_spec):
+    "global scaling apply to noise models spectrograms (scale between -1 and 1)"
+    matrix_spec = (matrix_spec -6 )/82
+    return matrix_spec
+
+def inv_scaled_in(matrix_spec):
+    "inverse global scaling apply to noisy voices spectrograms"
+    matrix_spec = matrix_spec * 50 - 46
+    return matrix_spec
+
+def inv_scaled_ou(matrix_spec):
+    "inverse global scaling apply to noise models spectrograms"
+    matrix_spec = matrix_spec * 82 + 6
+    return matrix_spec
 
 def get_dataloader(dataset, 
                     batch_size=BATCH_SIZE, random_seed=RANDOM_SEED, 

@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument('--startfm', type=int, default=START_FRAME, help="architecture start frame")
     parser.add_argument('--batchsize', type=int, default=BATCH_SIZE, help="total batch size for all GPUs (default:")
     parser.add_argument('--lr', type=float, default=LEARNING_RATE, help="learning rate (default: 0.0001)")
-    parser.add_argument('--size', type=int, default=INPUT_SIZE, help="input size (default: 128)")
+    # parser.add_argument('--size', type=int, default=INPUT_SIZE, help="input size (default: 128)")
 
     args = parser.parse_args()
     return args
@@ -57,14 +57,15 @@ def train(model, device, trainloader, optimizer, loss_function):
         optimizer.step()
 
         # log the first image of the batch
-        if ((i + 1) % 10) == 0:
-            pred = normtensor(predict[0])
-            img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
-            mask_list.append(wandb_mask(img, pred, mak))
+        # if ((i + 1) % 10) == 0:
+        #     pred = normtensor(predict[0])
+        #     img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+        #     mask_list.append(wandb_mask(img, pred, mak))
             
     mean_iou = np.mean(iou)
     total_loss = running_loss/len(trainloader)
-    wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou, 'Train prediction': mask_list})
+    # , 'Train prediction': mask_list
+    wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou})
 
     return total_loss, mean_iou
     
@@ -83,14 +84,15 @@ def test(model, device, testloader, loss_function, best_iou):
             iou.append(get_iou_score(predict, mask).mean())
 
             # log the first image of the batch
-            if ((i + 1) % 1) == 0:
-                pred = normtensor(predict[0])
-                img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
-                mask_list.append(wandb_mask(img, pred, mak))
+            # if ((i + 1) % 1) == 0:
+            #     pred = normtensor(predict[0])
+            #     img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+            #     mask_list.append(wandb_mask(img, pred, mak))
 
     test_loss = running_loss/len(testloader)
     mean_iou = np.mean(iou)
-    wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou, 'Prediction': mask_list})
+    # , 'Prediction': mask_list
+    wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou})
     
     if mean_iou>best_iou:
     # export to onnx + pt
@@ -113,24 +115,25 @@ if __name__ == '__main__':
         batchsize   = args.batchsize,
         epoch       = args.epoch,
         startfm     = args.startfm,
-        size        = args.size
+        # size        = args.size
     )
     
     RUN_NAME = args.run
-    INPUT_SIZE = args.size
+    # INPUT_SIZE = args.size
 
-    run = wandb.init(project="TGS-Salt-identification", tags=['Unet'], config=config)
-    artifact = wandb.Artifact('tgs-salt', type='dataset')
+    run = wandb.init(project="Speech-enhancement", tags=['UnetRes'], config=config)
+    artifact = wandb.Artifact('Spectrograms', type='Dataset')
 
     # train on device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print("Current device", device)
+    print("Current device", torch.cuda.get_device_name(torch.cuda.current_device()))
 
     try:
         artifact.add_dir(DATA_PATH)
         run.log_artifact(artifact)
     except:
-        artifact     = run.use_artifact('tgs-salt:latest')
+        artifact     = run.use_artifact('Spectrograms:latest', type='Dataset')
+        # artifact     = run.use_artifact('tgs-salt:latest')
         artifact_dir = artifact.download(DATA_PATH)
 
 

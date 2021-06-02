@@ -1,6 +1,6 @@
 ﻿# Vietnamese Speech-enhancement with Wave U-net
 
-<a href="https://wandb.ai/nmd2000/TGS-Salt-identification/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
+<a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
 
 Table of Contents
 ================
@@ -47,7 +47,7 @@ We used public source by Vincent Belz [[1]](#1) to transform the datasets, from 
 
 We publish our dataset as `Artifact` in this project worksplace at Weight&Bias (WB). We highly recommend to take a look what we've done at WB:
 
-<a href="https://wandb.ai/nmd2000/TGS-Salt-identification/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
+<a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
 
 Deployment
 =========

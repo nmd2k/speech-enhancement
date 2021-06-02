@@ -2,6 +2,8 @@ import os
 import librosa
 import librosa.display
 import numpy as np
+from tqdm import tqdm
+import pandas as pd
 from matplotlib import pyplot as plt
 
 def change_name(path):
@@ -13,6 +15,22 @@ def change_name(path):
     for dir in filenames:
         for file in os.listdir(dir):
             os.rename(dir+'/'+file, f'{dir}_{file}')
+
+def select_audio_from_domain(domains, csv, path, des=None):
+    if des is None:
+        des = path
+    df = pd.read_csv(csv)
+
+    filenames = []
+    for index, row in df.iterrows():
+        if row['category'] in domains:
+            filenames.append(row['filename'])
+
+    pb = tqdm(range(len(filenames)))
+    for idx in pb:
+        pb.set_description(filenames[idx])
+        os.rename(path+filenames[idx], des+filenames[idx])
+
 
 def plot_spectrogram(stftaudio_magnitude_db, sample_rate, hop_length_fft) :
     """This function plots a spectrogram"""

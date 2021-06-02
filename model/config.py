@@ -14,8 +14,12 @@ IMAGE_PATH      = './train/images/'
 MASK_PATH       = './train/masks/'
 UPLOAD_FOLDER   = 'uploads/'
 
+NOISE_DOMAINS   = ['vacuum_cleaner', 'clapping', 'fireworks', 'door_wood_knock', 'engine', 'mouse_click', 
+                    'clock_alarm', 'wind', 'keyboard_typing', 'footsteps', 'car_horn', 'drinking_sipping', 'snoring', 
+                    'breathing', 'toilet_flush', 'clock_tick', 'washing_machine', 'rain', 'rooster', 'laughing']
+
 RANDOM_SEED     = 42
 VALID_RATIO     = 0.2
 BATCH_SIZE      = 16
 NUM_WORKERS     = 0
-CLASSES         = {1:'noise'}
+CLASSES         = {1:'voice'}

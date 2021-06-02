@@ -1,19 +1,51 @@
-﻿# Vietnamese Speech-enhencement with Wave U-net
-> Dung Nguyen Manh: [[Github]](https://github.com/manhdung20112000) - [[Mail]](manhdung20112000@gmail.com)
->
-> Nguyen Phuc Hai: [[Github]](https://github.com/hainguyen2903) 
-> 
+﻿# Vietnamese Speech-enhancement with Wave U-net
 
-# [Abstract](#abstract)
-We are studying Computer Science in University of Technology and Engineering - Vietnam National University (VNU). This repository is our assignment for Course: Speech Processing (INT3411 20), where we attempt to rebuild a U-net [[1]](#1) for Speech Enhencement task and deploy a simple web application.
+Table of Contents
+================
+* [Abstract](#abstract)
+* [Dataset](#dataset)
+* [Deployment](#deployment)
+* [Reference](#reference)
 
-For details, we follow the architecture and experiment publish in [[2]](#2) [[3]](#3). The source code so far have been inspired by Vincent Belz [[4]](#4).
+Abstract
+========
+Speech enhancement is the task of improving the intelligibility and quality of a speech signal that may have been corrupted with noise or distortion, causing loss of intelligibility or quality and compromising its effectiveness in communication.
+
+The gif below represent the concept of speech enhancement, where the input audio has been processed to reduce the signal which corresponding to the noise.
+
+<img src="source/denoise_ts_10classes.gif" alt="Timeserie denoising" title="Speech enhancement"/>
+
+*Source: Vincent Belz [[4]](#4)*
+
+This repository is our assignment for Course: Speech Processing (INT3411 20), where we attempt to use U-net [[1]](#1) for Speech Enhencement task and deploy a simple web application.
  
-# [Dataset](#dataset)
+Dataset
+=======
+
+Audios have many different ways to be represented, going from raw time series to time-frequency decompositions. By representing with Spectrogram which consist of 2D images representing sequences of Short Time Fourier Transform (STFT) with time and frequency as axes, and brightness representing the strength of a frequency component at each time frame, the input of the model will be noisy voice spectrogram and the grouth truth will be clean voice spectrogram. Therefore, the UNet will learn how to segment the clean voice region inside noisy voice spectrogram (fig above).
+
+![demo model](source/Unet_noisyvoice_to_noisemodel.png)
+
+
+<!-- To create the dataset for training, we composed  -->
+
+Deployment
+=========
 In progress ...
 
-<!-- Cite something [[1]](#1) -->
-# [Reference](#refer)
+
+Team member
+===========
+Dung Nguyen Manh: 
+- :octocat: [manhdung20112000](https://github.com/manhdung20112000)  
+- :email: [manhdung20112000@gmail.com](mailto:manhdung20112000@gmail.com)
+
+Nguyen Phuc Hai: 
+- :octocat: [HaiNguyen2903](https://github.com/hainguyen2903) 
+
+
+Reference
+============
 <a id="1">[1]</a> 
 Jansson, A., Humphrey, E., Montecchio, N., Bittner, R., Kumar, A., & Weyde, T. (2017). Singing voice separation with deep u-net convolutional networks.
 

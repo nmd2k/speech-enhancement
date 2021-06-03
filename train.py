@@ -1,7 +1,7 @@
 import argparse
 
 from torch.nn.modules import dropout
-from utils.utils import normtensor, tensor2np, wandb_mask
+from utils.utils import normtensor, savenp2Img, tensor2np, wandb_mask
 
 from model.metric import get_iou_score
 import os
@@ -57,10 +57,16 @@ def train(model, device, trainloader, optimizer, loss_function):
         optimizer.step()
 
         # log the first image of the batch
-        # if ((i + 1) % 10) == 0:
-        #     pred = normtensor(predict[0])
-        #     img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
-        #     mask_list.append(wandb_mask(img, pred, mak))
+        if ((i + 1) % 10) == 0:
+            pred = normtensor(predict[0])
+            img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+            savenp2Img(SAVE_PATH+'image.jpg', img)
+            savenp2Img(SAVE_PATH+'prediction.jpg', pred)
+            savenp2Img(SAVE_PATH+'mask.jpg', mak)
+            mask_list.extend([wandb.Image(SAVE_PATH+'image.jpg'),
+                        wandb.Image(SAVE_PATH+'mask.jpg'),
+                        wandb.Image(SAVE_PATH+'prediction.jpg'),
+            ])
             
     mean_iou = np.mean(iou)
     total_loss = running_loss/len(trainloader)
@@ -84,10 +90,16 @@ def test(model, device, testloader, loss_function, best_iou):
             iou.append(get_iou_score(predict, mask).mean())
 
             # log the first image of the batch
-            # if ((i + 1) % 1) == 0:
-            #     pred = normtensor(predict[0])
-            #     img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
-            #     mask_list.append(wandb_mask(img, pred, mak))
+            if ((i + 1) % 1) == 0:
+                pred = normtensor(predict[0])
+                img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+                savenp2Img(SAVE_PATH+'image.jpg', img)
+                savenp2Img(SAVE_PATH+'prediction.jpg', pred)
+                savenp2Img(SAVE_PATH+'mask.jpg', mak)
+                mask_list.extend([wandb.Image(SAVE_PATH+'image.jpg'),
+                            wandb.Image(SAVE_PATH+'mask.jpg'),
+                            wandb.Image(SAVE_PATH+'prediction.jpg'),
+                ])
 
     test_loss = running_loss/len(testloader)
     mean_iou = np.mean(iou)
@@ -133,7 +145,6 @@ if __name__ == '__main__':
         run.log_artifact(artifact)
     except:
         artifact     = run.use_artifact('Spectrograms:latest', type='Dataset')
-        # artifact     = run.use_artifact('tgs-salt:latest')
         artifact_dir = artifact.download(DATA_PATH)
 
 

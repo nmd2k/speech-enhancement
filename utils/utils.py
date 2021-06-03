@@ -1,4 +1,4 @@
-from model.config import CLASSES
+from model.config import CLASSES, SAVE_PATH
 import wandb
 import numpy as np
 import torch
@@ -52,19 +52,30 @@ def tensor2np(tensor):
     tensor = tensor.squeeze().cpu()
     return tensor.detach().numpy()
 
+def savenp2Img(name, np_array):
+    plt.imsave(name, np_array, cmap='jet', origin='lower')
+
 def normtensor(tensor):
     tensor = torch.where(tensor<0., torch.zeros(1).cuda(), torch.ones(1).cuda())
     return tensor
 
-def wandb_mask(bg_imgs, pred_masks, true_masks):
+def wandb_mask():
+    images = [
+        wandb.Image(SAVE_PATH+'image.jpg'),
+        wandb.Image(SAVE_PATH+'prediction.jpg'),
+        wandb.Image(SAVE_PATH+'mask.jpg'), 
+    ]
+    return images
 
-    return wandb.Image(bg_imgs, masks={
-        "predictions" : {
-            "mask_data" : pred_masks,
-            "class_labels" : CLASSES
-            },
-        "ground_truth" : {
-            "mask_data" : true_masks, 
-            "class_labels" : CLASSES
-            }
-        })
+# def wandb_mask(bg_imgs, pred_masks, true_masks):
+
+#     return wandb.Image(bg_imgs, masks={
+#         "predictions" : {
+#             "mask_data" : pred_masks,
+#             "class_labels" : CLASSES
+#             },
+#         "ground_truth" : {
+#             "mask_data" : true_masks, 
+#             "class_labels" : CLASSES
+#             }
+#         })

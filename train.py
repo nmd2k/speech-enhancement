@@ -58,8 +58,8 @@ def train(model, device, trainloader, optimizer, loss_function):
 
         # log the first image of the batch
         if ((i + 1) % 10) == 0:
-            pred = normtensor(predict[0])
-            img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+            # pred = normtensor(predict[i])
+            img, pred, mak = tensor2np(input[i]), tensor2np(predict[i]), tensor2np(mask[i])
             savenp2Img(SAVE_PATH+'image.jpg', img)
             savenp2Img(SAVE_PATH+'prediction.jpg', pred)
             savenp2Img(SAVE_PATH+'mask.jpg', mak)
@@ -91,8 +91,8 @@ def test(model, device, testloader, loss_function, best_iou):
 
             # log the first image of the batch
             if ((i + 1) % 1) == 0:
-                pred = normtensor(predict[0])
-                img, pred, mak = tensor2np(input[0]), tensor2np(pred), tensor2np(mask[0])
+                # pred = normtensor(predict[0])
+                img, pred, mak = tensor2np(input[i]), tensor2np(predict[i]), tensor2np(mask[i])
                 savenp2Img(SAVE_PATH+'image.jpg', img)
                 savenp2Img(SAVE_PATH+'prediction.jpg', pred)
                 savenp2Img(SAVE_PATH+'mask.jpg', mak)

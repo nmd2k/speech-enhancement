@@ -57,15 +57,15 @@ def train(model, device, trainloader, optimizer, loss_function):
         optimizer.step()
 
         # log the first image of the batch
-        if ((i + 1) % 10) == 0:
-            # pred = normtensor(predict[i])
-            img, pred, mak = tensor2np(input[i]), tensor2np(predict[i]), tensor2np(mask[i])
-            savenp2Img(SAVE_PATH+'image.jpg', img)
-            savenp2Img(SAVE_PATH+'prediction.jpg', pred)
-            savenp2Img(SAVE_PATH+'mask.jpg', mak)
-            mask_list.extend([wandb.Image(SAVE_PATH+'image.jpg'),
-                        wandb.Image(SAVE_PATH+'mask.jpg'),
-                        wandb.Image(SAVE_PATH+'prediction.jpg'),
+        if ((i + 1) % 20) == 0:
+            rand = np.random.randint(0, BATCH_SIZE)
+            img, pred, mak = tensor2np(input[1]), tensor2np(predict[1]), tensor2np(mask[1])
+            savenp2Img(SAVE_PATH+f'image_{rand}.jpg', img)
+            savenp2Img(SAVE_PATH+f'prediction_{rand}.jpg', pred)
+            savenp2Img(SAVE_PATH+f'mask_{rand}.jpg', mak)
+            mask_list.extend([wandb.Image(SAVE_PATH+f'image_{rand}.jpg'),
+                        wandb.Image(SAVE_PATH+f'mask_{rand}.jpg'),
+                        wandb.Image(SAVE_PATH+f'prediction_{rand}.jpg'),
             ])
             
     mean_iou = np.mean(iou)
@@ -90,15 +90,15 @@ def test(model, device, testloader, loss_function, best_iou):
             iou.append(get_iou_score(predict, mask).mean())
 
             # log the first image of the batch
-            if ((i + 1) % 1) == 0:
-                # pred = normtensor(predict[0])
-                img, pred, mak = tensor2np(input[i]), tensor2np(predict[i]), tensor2np(mask[i])
-                savenp2Img(SAVE_PATH+'image.jpg', img)
-                savenp2Img(SAVE_PATH+'prediction.jpg', pred)
-                savenp2Img(SAVE_PATH+'mask.jpg', mak)
-                mask_list.extend([wandb.Image(SAVE_PATH+'image.jpg'),
-                            wandb.Image(SAVE_PATH+'mask.jpg'),
-                            wandb.Image(SAVE_PATH+'prediction.jpg'),
+            if ((i + 1) % 10) == 0:
+                rand = np.random.randint(0, 6000)
+                img, pred, mak = tensor2np(input[1]), tensor2np(predict[1]), tensor2np(mask[1])
+                savenp2Img(SAVE_PATH+f'image_{rand}.jpg', img)
+                savenp2Img(SAVE_PATH+f'prediction_{rand}.jpg', pred)
+                savenp2Img(SAVE_PATH+f'mask_{rand}.jpg', mak)
+                mask_list.extend([wandb.Image(SAVE_PATH+f'image_{rand}.jpg'),
+                            wandb.Image(SAVE_PATH+f'mask_{rand}.jpg'),
+                            wandb.Image(SAVE_PATH+f'prediction_{rand}.jpg'),
                 ])
 
     test_loss = running_loss/len(testloader)
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     RUN_NAME = args.run
     # INPUT_SIZE = args.size
 
-    run = wandb.init(project="Speech-enhancement", tags=['UnetRes'], config=config)
+    run = wandb.init(project="Speech-enhancement", config=config)
     artifact = wandb.Artifact('Spectrograms', type='Dataset')
 
     # train on device
@@ -156,10 +156,14 @@ if __name__ == '__main__':
     n_classes = N_CLASSES
     epochs = args.epoch
 
+    tag = 'Unet'
     if args.model == 'Unet':
         model = UNet(start_fm=args.startfm).to(device)
     else:
+        tag = 'UnetRes'
         model = UNet_ResNet(dropout=args.dropout, start_fm=args.startfm).to(device)
+
+    run.tags.append(tag)
 
     criterion = nn.BCEWithLogitsLoss()
 
@@ -184,5 +188,9 @@ if __name__ == '__main__':
         if best_iou < test_iou:
             best_iou = test_iou
             wandb.run.summary["best_accuracy"] = best_iou
-
+    
+    trained_weight = wandb.Artifact(RUN_NAME, type='weights')
+    trained_weight.add_file(SAVE_PATH+RUN_NAME+'.onnx')
+    trained_weight.add_file(SAVE_PATH+RUN_NAME+'.pth')
+    wandb.log_artifact(trained_weight)
     # evaluate

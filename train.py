@@ -29,6 +29,7 @@ def parse_args():
     parser.add_argument('--startfm', type=int, default=START_FRAME, help="architecture start frame")
     parser.add_argument('--batchsize', type=int, default=BATCH_SIZE, help="total batch size for all GPUs (default:")
     parser.add_argument('--lr', type=float, default=LEARNING_RATE, help="learning rate (default: 0.0001)")
+    parser.add_argument('--tuning', action='store_true', help="no plot image for tuning")
     # parser.add_argument('--size', type=int, default=INPUT_SIZE, help="input size (default: 128)")
 
     args = parser.parse_args()
@@ -57,7 +58,7 @@ def train(model, device, trainloader, optimizer, loss_function):
         optimizer.step()
 
         # log the first image of the batch
-        if ((i + 1) % 20) == 0:
+        if ((i + 1) % 20) == 0 and not args.tuning:
             rand = np.random.randint(0, 6000)
             img, pred, mak = tensor2np(input[1]), tensor2np(predict[1]), tensor2np(mask[1])
             savenp2Img(SAVE_PATH+f'image_{rand}.jpg', img)
@@ -70,7 +71,9 @@ def train(model, device, trainloader, optimizer, loss_function):
             
     mean_iou = np.mean(iou)
     total_loss = running_loss/len(trainloader)
-    wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou, 'Train prediction': mask_list})
+    if not args.tuning:
+        wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou, 'Train prediction': mask_list})
+    else: wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou})
 
     return total_loss, mean_iou
     
@@ -89,7 +92,7 @@ def test(model, device, testloader, loss_function, best_iou):
             iou.append(get_iou_score(predict, mask).mean())
 
             # log the first image of the batch
-            if ((i + 1) % 10) == 0:
+            if ((i + 1) % 10) == 0 and not args.tuning:
                 rand = np.random.randint(0, 6000)
                 img, pred, mak = tensor2np(input[1]), tensor2np(predict[1]), tensor2np(mask[1])
                 savenp2Img(SAVE_PATH+f'image_{rand}.jpg', img)
@@ -102,7 +105,9 @@ def test(model, device, testloader, loss_function, best_iou):
 
     test_loss = running_loss/len(testloader)
     mean_iou = np.mean(iou)
-    wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou, 'Prediction': mask_list})
+    if not args.tuning:
+        wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou, 'Prediction': mask_list})
+    else: wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou})
     
     if mean_iou>best_iou:
     # export to onnx + pt
@@ -187,8 +192,9 @@ if __name__ == '__main__':
             best_iou = test_iou
             wandb.run.summary["best_accuracy"] = best_iou
     
-    trained_weight = wandb.Artifact(RUN_NAME, type='weights')
-    trained_weight.add_file(SAVE_PATH+RUN_NAME+'.onnx')
-    trained_weight.add_file(SAVE_PATH+RUN_NAME+'.pth')
-    wandb.log_artifact(trained_weight)
+    if not args.tuning:
+        trained_weight = wandb.Artifact(RUN_NAME, type='weights')
+        trained_weight.add_file(SAVE_PATH+RUN_NAME+'.onnx')
+        trained_weight.add_file(SAVE_PATH+RUN_NAME+'.pth')
+        wandb.log_artifact(trained_weight)
     # evaluate

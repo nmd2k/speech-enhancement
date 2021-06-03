@@ -70,8 +70,7 @@ def train(model, device, trainloader, optimizer, loss_function):
             
     mean_iou = np.mean(iou)
     total_loss = running_loss/len(trainloader)
-    # , 'Train prediction': mask_list
-    wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou})
+    wandb.log({'Train loss': total_loss, 'Train IoU': mean_iou, 'Train prediction': mask_list})
 
     return total_loss, mean_iou
     
@@ -103,8 +102,7 @@ def test(model, device, testloader, loss_function, best_iou):
 
     test_loss = running_loss/len(testloader)
     mean_iou = np.mean(iou)
-    # , 'Prediction': mask_list
-    wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou})
+    wandb.log({'Valid loss': test_loss, 'Valid IoU': mean_iou, 'Prediction': mask_list})
     
     if mean_iou>best_iou:
     # export to onnx + pt
@@ -163,7 +161,7 @@ if __name__ == '__main__':
         tag = 'UnetRes'
         model = UNet_ResNet(dropout=args.dropout, start_fm=args.startfm).to(device)
 
-    run.tags.append(tag)
+    run.tags = [tag]
 
     criterion = nn.BCEWithLogitsLoss()
 

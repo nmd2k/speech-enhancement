@@ -3,9 +3,9 @@ torch>=1.8.1
 torchvision>=0.9.1
 librosa>=0.8.1
 
-# dataset =====
-# scikit-image>=0.18.1
-
 # log experiment
 wandb
-tqdm
+
+# web deployment
+streamlit
+

@@ -1,35 +1,50 @@
-import os
-import argparse
-from logging import debug
-from werkzeug.utils import secure_filename
-from flask import Flask, request, redirect, render_template
-from model.config import UPLOAD_FOLDER
+import requests
+import numpy as np
+import librosa
+import streamlit as st
+from utils.app_utils import *
+from model.config import *
 
-app = Flask(__name__, static_url_path='',
-            static_folder='templates/static',
-            template_folder='templates')
+@st.cache(allow_output_mutation=True)
+def load_session():
+    return requests.Session()
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+def main():
+    st.title(':musical_note: Audio Noise Reduction')
+    st.subheader('Remove your audio background noise using Artificial Intelligence')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+    sess = load_session()
 
-@app.route('/uploadfile', methods=['POST'])
-def upload_file():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            print('no file')
-            return redirect(request.url)
-        file = request.files['file']
+    uploaded_file = st.file_uploader("Upload your audio/video:", type=['mp3', 'mp4', 'wav'])
+    
+    trigger = False
 
-    return render_template('upload_file.html')
+    if uploaded_file != None:
+        st.subheader('Input audio/video')
+        trigger = True
 
-if '__name__' == '__main__':
-    parser = argparse.ArgumentParser()
-    opt = parser.parse_args()
+        if uploaded_file.type == 'audio/mpeg':
+            audio_bytes = uploaded_file.read()
+            st.audio(audio_bytes, format='audio/mpeg')
 
-#     app.run(debug=True)
+        elif uploaded_file.type == 'video/mp4':
+            video_bytes = uploaded_file.read()
+            st.video(video_bytes)
+
+    col1, col2, col3 = st.beta_columns([1,1,1])
+
+    if trigger and col2.button('Start reducing'):
+        pass
+
+
+if __name__ == '__main__':
+
+    st.set_page_config(
+        page_title="Noise Reduction",
+        page_icon="🤖",
+        layout="centered",
+        initial_sidebar_state="collapsed",
+    )
+    
+    main()

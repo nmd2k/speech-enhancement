@@ -58,7 +58,7 @@ def train(model, device, trainloader, optimizer, loss_function):
 
         # log the first image of the batch
         if ((i + 1) % 20) == 0:
-            rand = np.random.randint(0, BATCH_SIZE)
+            rand = np.random.randint(0, 6000)
             img, pred, mak = tensor2np(input[1]), tensor2np(predict[1]), tensor2np(mask[1])
             savenp2Img(SAVE_PATH+f'image_{rand}.jpg', img)
             savenp2Img(SAVE_PATH+f'prediction_{rand}.jpg', pred)
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
     run.tags = [tag]
 
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.SmoothL1Loss()
 
     # loss_func   = Weighted_Cross_Entropy_Loss()
     optimizer   = optim.Adam(model.parameters(), lr=args.lr)

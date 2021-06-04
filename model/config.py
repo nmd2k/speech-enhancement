@@ -10,7 +10,7 @@ DROP_RATE       = 0.5
 # Data config =======
 SAVE_PATH       = './model/'
 DATA_PATH       = './data/'
-UPLOAD_FOLDER   = 'uploads/'
+UPLOAD_FOLDER   = './uploads/'
 
 NOISE_DOMAINS   = ['vacuum_cleaner', 'clapping', 'fireworks', 'door_wood_knock', 'engine', 'mouse_click', 
                     'clock_alarm', 'wind', 'keyboard_typing', 'footsteps', 'car_horn', 'drinking_sipping', 'snoring', 
@@ -23,4 +23,9 @@ NUM_WORKERS     = 0
 CLASSES         = {1:'noise'}
 
 # Speech config =====
-SAMPLE_RATE     = 8000
+SAMPLE_RATE         = 8000
+N_FFT               = 255
+HOP_LENGTH_FFT      = 63
+HOP_LENGTH_FRAME    = 8064
+FRAME_LENGTH        = 8064
+MIN_DURATION        = 1.0

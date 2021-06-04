@@ -28,13 +28,13 @@ def main():
 
     if uploaded_file is not None:
         st.subheader('Input audio/video')
-        
-        if uploaded_file.type[:-4] == 'audio/':
+        print(uploaded_file.type)
+        if uploaded_file.type[:-4] == 'audio':
             audio_bytes = uploaded_file.read()
             st.audio(audio_bytes, format=uploaded_file.type)
             type = 'audio'
 
-        elif uploaded_file.type[:-4] == 'video/':
+        elif uploaded_file.type[:-4] == 'video':
             video_bytes = uploaded_file.read()
             st.video(video_bytes)
             st.error('You might end up with an error because we are not support Video format!')

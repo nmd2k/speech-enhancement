@@ -2,10 +2,15 @@
 
 <a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
 
+*In processing* <a href="#"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"></a> 
+
+
 Table of Contents
 ================
 * [Abstract](#abstract)
 * [Dataset](#dataset)
+* [Training](#training)
+* [Result](#result)
 * [Deployment](#deployment)
 * [Reference](#reference)
 
@@ -49,9 +54,30 @@ We publish our dataset as `Artifact` in this project worksplace at Weight&Bias (
 
 <a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
 
+Training
+========
+
+Result
+======
+
+
 Deployment
 =========
-In progress ...
+To build a simple web application for demonstrate, we are using **Streamlit**, which is amazing tool for guys who don't know much about *html, css and so on*. With **Streamlit**, we can code our back-end with Python, which is very cool and easy to get started with.
+
+To install **Streamlit** and orther dependencies, run:
+```
+$ pip install -r requirements.txt
+```
+
+To run app **Streamlit**, run:
+```
+$ streamlit run app.py
+```
+
+After that, if you see the same thing as in this video, you are go to go.
+[![video-demo](source/Demo-cover.png)](https://youtu.be/kKOSrEUSsVc)
+
 
 
 Team member

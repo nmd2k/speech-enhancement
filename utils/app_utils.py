@@ -13,20 +13,36 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+def process_input_format(filename):
+    extension = filename[-3]
+    if extension != 'wav' and extension != 'mp4':
+        return filename[:-3] + 'wav'
+    else:
+        return filename
+
+def play_audio_file(audio_file):
+    audio_bytes = audio_file.read()
+    st.audio(audio_bytes, format="audio/wav")
+
 def convertaudio_to_wav(filename):
     """Converter from other audio format to wav
     """
-    AudioSegment.converter = "E:\Systems\miniconda3\envs\ml\Lib\site-packages\ffmpeg"
-    if filename[-3:] == 'mp3':
-        sound = AudioSegment.from_mp3(filename)
-    if filename[-3:] == 'ogg':
-        sound = AudioSegment.from_ogg(filename)
-    if filename[-3:] == 'mp3':
-        sound = AudioSegment.from_flv(filename)
-    else: return
+    # AudioSegment.converter = "E:\Systems\miniconda3\envs\ml\Lib\site-packages\ffmpeg"
+    # if filename[-3:] == 'mp3':
+    #     sound = AudioSegment.from_mp3(filename)
+    # if filename[-3:] == 'ogg':
+    #     sound = AudioSegment.from_ogg(filename)
+    if 'mp3' in filename:
+        sound = AudioSegment.from_mp3(os.path.join(UPLOAD_FOLDER, filename))
+    elif 'wav' in filename: 
+        st.error('Just MP3 convert only!')
+    else:
+        return
 
     sound.export(UPLOAD_FOLDER+filename[:-3]+'wav', format="wav")
-    return 
+
+    converted_file_path = os.path.join(UPLOAD_FOLDER, filename[:-3], 'wav')
+    return converted_file_path
 
 def file_selector(folder_path='.'):
     filenames = os.listdir(folder_path)
@@ -163,14 +179,20 @@ def model_denoising(filename, model_type='Unet'):
     if model_type == 'Unet':
         model = UNet(start_fm=32).to(device)
         try:
-            model.load_state_dict(torch.load('./model/unet.pth'))
+            if torch.cuda.is_available():
+                model.load_state_dict(torch.load('./model/unet.pth'))
+            else:
+                model.load_state_dict(torch.load('./model/unet.pth', map_location='cpu'))
         except:
             st.error('Your weight are not found. Make sure the weight located in ./model')
 
     else:
         model = UNet_ResNet(start_fm=16).to(device)
         try:
-            model.load_state_dict(torch.load('./model/unetres.pth'))
+            if torch.cuda.is_available():
+                model.load_state_dict(torch.load('./model/unetres.pth'))
+            else:
+                model.load_state_dict(torch.load('./model/unetres.pth', map_location='cpu'))
         except:
             st.error('Your weight are not found. Make sure the weight located in ./model')
 

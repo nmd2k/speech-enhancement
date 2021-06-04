@@ -26,11 +26,11 @@ def main():
     if uploaded_file is not None:
         st.subheader('Input audio/video')
 
-        if uploaded_file.type == 'audio/wav':
+        if uploaded_file.type[:-4] == 'audio':
             audio_bytes = uploaded_file.read()
             st.audio(audio_bytes, format='audio/mpeg')
 
-        elif uploaded_file.type == 'video/mp4':
+        elif uploaded_file.type[:-4] == 'video':
             video_bytes = uploaded_file.read()
             st.video(video_bytes)
             st.error('Not supported yet')
@@ -52,13 +52,13 @@ def main():
     if is_success:
         st.header(':musical_note: Your processed audio/video')
         
-        if uploaded_file.type == 'audio/wav':
+        if uploaded_file.type[:-4] == 'audio':
             out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{uploaded_file.name}'), 'rb')
             out_audio_bytes = out_audio_file.read()
 
             st.audio(out_audio_bytes, format=uploaded_file.type)
 
-        elif uploaded_file.type == 'video/mp4':
+        elif uploaded_file.type[:-4] == 'video':
             st.error('Not supported yet')
             pass
         
@@ -75,11 +75,12 @@ def main():
 
         my_expander2 = st.beta_expander('Noise detail')
         with my_expander2:
-            st.subheader('Noise detection')
+            st.subheader('Noise prediction')
             col1, col2 = st.beta_columns([1,1])
             noise_spec          = Image.open(os.path.join(UPLOAD_FOLDER, 'noise_spec.png'))
-            noise_time_serie    = Image.open(os.path.join(UPLOAD_FOLDER, 'noise_time_serie.png'))
-            col1.image(noise_time_serie)
+            # noise_time_serie    = Image.open(os.path.join(UPLOAD_FOLDER, 'noise_time_serie.png'))
+            # col1.image(noise_time_serie)
+            # col1.markdown("This is blank because when predicting the noise spectrogram, we don't have the true phase of that noise. \nTherefore we can not reconstruct the audio file.")
             col2.image(noise_spec)
             
         my_expander2 = st.beta_expander('Output detail')

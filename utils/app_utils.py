@@ -1,5 +1,5 @@
 # Author: github.com/vbelz/Speech-enhancement
-from model.model import UNet
+from model.model import UNet, UNet_ResNet
 import torch
 from torchvision import transforms
 from model.config import *
@@ -126,7 +126,7 @@ def inv_scaled_ou(matrix_spec):
     matrix_spec = matrix_spec * 82 + 6
     return matrix_spec
 
-def model_denoising(filename, model='Unet'):
+def model_denoising(filename, model_type='UnetRes'):
     audio = audio_files_to_numpy(UPLOAD_FOLDER, [filename], SAMPLE_RATE,
                                 FRAME_LENGTH, HOP_LENGTH_FRAME, MIN_DURATION)
 
@@ -143,24 +143,21 @@ def model_denoising(filename, model='Unet'):
     trans = transforms.ToTensor()
 
     X_in = trans(scaled_in(m_amp_db[0, :])).unsqueeze(0).to(device, dtype=torch.float)
-    print("INPUT", m_amp_db)
-    print("INPUT_normalize", X_in)
 
-    model = UNet(start_fm=32).to(device)
-    model.load_state_dict(torch.load('./model/unet.pth'))
+    if model_type == 'Unet':
+        model = UNet(start_fm=32).to(device)
+        model.load_state_dict(torch.load('./model/unet.pth'))
+
+    else:
+        model = UNet_ResNet(start_fm=16).to(device)
+        model.load_state_dict(torch.load('./model/unetres.pth'))
 
     model.eval()
     X_pred = model(X_in)
 
-
-    print("PRED", X_pred)
     pred_amp_db = inv_scaled_ou(X_pred.detach().cpu().numpy())
-    print("PRED_ou", pred_amp_db)
-    pred_amp_db_in = inv_scaled_in(X_pred.detach().cpu().numpy())
-    print("PRED_in", pred_amp_db_in)
 
-    X_denoise = m_amp_db - pred_amp_db[:,:,:,0]
-    print("NO NOISE", X_denoise)
+    X_denoise = m_amp_db - pred_amp_db[0]
 
     ou_audio = matrix_spectrogram_to_numpy_audio(X_denoise, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
 
@@ -207,10 +204,10 @@ def analyst_result(filename, m_amp_db, m_pha, pred_amp_db, X_denoise):
     pred_amp_db = pred_amp_db[0,:,:]
     plot_spectrogram(pred_amp_db[0], 'noise_spec.png')
     noise_audio = matrix_spectrogram_to_numpy_audio(pred_amp_db, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
-    nb_samples = noise_audio.shape[0]
-    noise_long = noise_audio.reshape(1, nb_samples*FRAME_LENGTH)*10
-    sf.write(UPLOAD_FOLDER + 'noise_' + filename, noise_long[0, :], SAMPLE_RATE)
-    plot_time_serie(UPLOAD_FOLDER + 'noise_' + filename, 'noise_time_serie.png')
+    # nb_samples = noise_audio.shape[0]
+    # noise_long = noise_audio.reshape(1, nb_samples*FRAME_LENGTH)*10
+    # sf.write(UPLOAD_FOLDER + 'noise_' + filename, noise_long[0, :], SAMPLE_RATE)
+    # plot_time_serie(UPLOAD_FOLDER + 'noise_' + filename, 'noise_time_serie.png')
 
     # output analyst
     plot_spectrogram(X_denoise[0], 'out_spec.png')

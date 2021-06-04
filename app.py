@@ -5,6 +5,7 @@ import streamlit as st
 import soundfile as sf
 from utils.app_utils import *
 from model.config import *
+import subprocess
 
 @st.cache(allow_output_mutation=True)
 def load_session():
@@ -21,39 +22,45 @@ def main():
 
     sess = load_session()
 
-    uploaded_file = st.file_uploader("Upload your audio/video:", type=['mp4', 'wav'])
+    uploaded_file = st.file_uploader("Upload your audio/video:", type=['wav'])
+
+    type = None
 
     if uploaded_file is not None:
         st.subheader('Input audio/video')
-
-        if uploaded_file.type[:-4] == 'audio':
+        
+        if uploaded_file.type[:-4] == 'audio/':
             audio_bytes = uploaded_file.read()
-            st.audio(audio_bytes, format='audio/mpeg')
+            st.audio(audio_bytes, format=uploaded_file.type)
+            type = 'audio'
 
-        elif uploaded_file.type[:-4] == 'video':
+        elif uploaded_file.type[:-4] == 'video/':
             video_bytes = uploaded_file.read()
             st.video(video_bytes)
-            st.error('Not supported yet')
+            st.error('You might end up with an error because we are not support Video format!')
+            type = 'video'
 
     col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.beta_columns([1,1,1,1,1,1,1,1,1,1,1])
     
     is_success=False
 
-    if uploaded_file is not None and col6.button('Start reducing!'):
+    if type is not None and col6.button('Start reducing!'):
+        filename = uploaded_file.name
+
         # save file to backend
         save_uploadedfile(uploaded_file)
-        # try:
-        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(uploaded_file.name)
-        analyst_result(uploaded_file.name, m_amp_db, m_pha, pred_amp_db, X_denoise)
+
+        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(filename)
+        analyst_result(filename, m_amp_db, m_pha, pred_amp_db, X_denoise)
         is_success = True
         # except:
-        #     st.error('An error occurred. Please try again later')
+            # st.error('An error occurred. Please try again later')
 
     if is_success:
         st.header(':musical_note: Your processed audio/video')
         
         if uploaded_file.type[:-4] == 'audio':
-            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{uploaded_file.name}'), 'rb')
+            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{filename}'), 'rb')
             out_audio_bytes = out_audio_file.read()
 
             st.audio(out_audio_bytes, format=uploaded_file.type)

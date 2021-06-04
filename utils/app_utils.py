@@ -6,11 +6,27 @@ from model.config import *
 import os
 import librosa
 import librosa.display
+from pydub import AudioSegment
 import numpy as np
 import soundfile as sf
 import streamlit as st
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+def convertaudio_to_wav(filename):
+    """Converter from other audio format to wav
+    """
+    AudioSegment.converter = "E:\Systems\miniconda3\envs\ml\Lib\site-packages\ffmpeg"
+    if filename[-3:] == 'mp3':
+        sound = AudioSegment.from_mp3(filename)
+    if filename[-3:] == 'ogg':
+        sound = AudioSegment.from_ogg(filename)
+    if filename[-3:] == 'mp3':
+        sound = AudioSegment.from_flv(filename)
+    else: return
+
+    sound.export(UPLOAD_FOLDER+filename[:-3]+'wav', format="wav")
+    return 
 
 def file_selector(folder_path='.'):
     filenames = os.listdir(folder_path)
@@ -126,7 +142,7 @@ def inv_scaled_ou(matrix_spec):
     matrix_spec = matrix_spec * 82 + 6
     return matrix_spec
 
-def model_denoising(filename, model_type='UnetRes'):
+def model_denoising(filename, model_type='Unet'):
     audio = audio_files_to_numpy(UPLOAD_FOLDER, [filename], SAMPLE_RATE,
                                 FRAME_LENGTH, HOP_LENGTH_FRAME, MIN_DURATION)
 
@@ -143,14 +159,20 @@ def model_denoising(filename, model_type='UnetRes'):
     trans = transforms.ToTensor()
 
     X_in = trans(scaled_in(m_amp_db[0, :])).unsqueeze(0).to(device, dtype=torch.float)
-
+    
     if model_type == 'Unet':
         model = UNet(start_fm=32).to(device)
-        model.load_state_dict(torch.load('./model/unet.pth'))
+        try:
+            model.load_state_dict(torch.load('./model/unet.pth'))
+        except:
+            st.error('Your weight are not found. Make sure the weight located in ./model')
 
     else:
         model = UNet_ResNet(start_fm=16).to(device)
-        model.load_state_dict(torch.load('./model/unetres.pth'))
+        try:
+            model.load_state_dict(torch.load('./model/unetres.pth'))
+        except:
+            st.error('Your weight are not found. Make sure the weight located in ./model')
 
     model.eval()
     X_pred = model(X_in)

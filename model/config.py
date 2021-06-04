@@ -20,7 +20,6 @@ RANDOM_SEED     = 42
 VALID_RATIO     = 0.2
 BATCH_SIZE      = 16
 NUM_WORKERS     = 0
-CLASSES         = {1:'noise'}
 
 # Speech config =====
 SAMPLE_RATE         = 8000

@@ -1,0 +1,2 @@
+-y update
+install libsndfile1

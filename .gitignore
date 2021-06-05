@@ -3,3 +3,5 @@ data/
 uploads/
 wandb/
 *.log
+__pycache__
+uploads/

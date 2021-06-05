@@ -91,8 +91,8 @@ def main():
         elif 'video' in uploaded_file.type:
             vid =  mp.VideoFileClip(os.path.join(UPLOAD_FOLDER, file_name))
 
-            new_clip = vid.set_audio(mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, file_name[:-3] + 'wav')))
-            
+            new_clip = vid.set_audio(mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, 'out_' + file_name[:-3] + 'wav')))
+
             new_clip.write_videofile(UPLOAD_FOLDER + 'out_' + file_name[:-3] + 'mp4')
 
             # out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')

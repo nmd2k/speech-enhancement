@@ -31,9 +31,11 @@ This repository is our assignment for Course: Speech Processing (INT3411 20), wh
 Dataset
 =======
 
-Audios have many different ways to be represented, going from raw time series to time-frequency decompositions. By representing with Spectrogram which consist of 2D images representing sequences of Short Time Fourier Transform (STFT) with time and frequency as axes, and brightness representing the strength of a frequency component at each time frame, the input of the model will be noisy voice spectrogram and the grouth truth will be clean voice spectrogram. Therefore, the UNet will learn how to segment the clean voice region inside noisy voice spectrogram (fig above).
+Audios have many different ways to be represented, going from raw time series to time-frequency decompositions. By representing with Spectrogram which consist of 2D images representing sequences of Short Time Fourier Transform (STFT) with time and frequency as axes, and brightness representing the strength of a frequency component at each time frame, the input of the model will be noisy voice spectrogram and the grouth truth will be clean voice spectrogram.
 
-![demo model](source/Unet_noisyvoice_to_noisemodel.png)
+<img src="source/sound_to_spectrogram.png" alt="Sound to spectrogram" title="Speech enhancement"/>
+
+*Source: Vincent Belz [[1]](#1)*
 
 **The clean voices** were approximately 10 hours of reading Vietnamese articles by us, student of Speech Processing Course at UET. 
 
@@ -58,6 +60,19 @@ We publish our dataset as `Artifact` in this project worksplace at Weight&Bias (
 
 Training
 ========
+Inorder to take input as mel spectrogram image of audio and output as mel spectrogram image of detected noise, we are focusing on U-net, a model was initially developed for Bio Medical Image Segmentation [[2]](#2), for adapting to denoise spectrograms.
+
+<img src="source/Unet_noisyvoice_to_noisemodel.png" alt="Unet for denoise spectrograms" title="Speech enhancement"/>
+
+*Source: Vincent Belz [[1]](#1)*
+
+The original U-net's only contains convolutional and deconvolutional (transpose convolutional). In this project, inspired by the architecture of residual block [[5]](#5), we attempt to introduce some new skip connection to the Unet architecture. The architecture of the Unet based Resnet is shown below:
+
+<img src="source/Unet_ResNet.png" alt="Unet for denoise spectrograms" title="Speech enhancement"/>
+
+However, experimence showed some downside while using this architecture than the original. We are still researching deeper into this Unet based Resnet model and the process is not finished yet. **Therefore, use at your own risk.**
+
+
 
 Result
 ======
@@ -69,9 +84,11 @@ To build a simple web application for demonstrate, we are using **Streamlit**, w
 
 Streamlit share
 --------------
-We have deployed our application into **Streamlit.share**, in case the app is sleeping, that is because **Stream.share** limitation, just wake it up. Many thanks
+We have deployed our application into **Streamlit.share** which provided 1 CPU with 800MB RAM and 800MB delicated storage for our application. 
 
 <a href="https://share.streamlit.io/manhdung20112000/speech-enhancement/main/app.py"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"></a>
+
+*Note:* In case you see the app is sleeping, that is because **Stream.share** limitation, just wake it up. Many thanks
 
 Localhost run
 ------------
@@ -106,7 +123,7 @@ Reference
 Vincent Belz, "Speech-enhancement". Github:https://github.com/vbelz/Speech-enhancement.
 
 <a id="2">[2]</a> 
-Jansson, A., Humphrey, E., Montecchio, N., Bittner, R., Kumar, A., & Weyde, T. (2017). Singing voice separation with deep u-net convolutional networks.
+Jansson, Andreas, Eric J. Humphrey, Nicola Montecchio, Rachel M. Bittner, Aparna Kumar and Tillman Weyde.Singing Voice Separation with Deep U-Net Convolutional Networks. ISMIR (2017). [https://ejhumphrey.com/assets/pdf/jansson2017singing.pdf]
 
 <a id="3">[3]</a> 
 Karol J. Piczak. 2015. ESC: Dataset for Environmental Sound Classification. In Proceedings of the 23rd ACM international conference on Multimedia (MM '15). Association for Computing Machinery, New York, NY, USA, 1015–1018. DOI:https://doi.org/10.1145/2733373.2806390
@@ -114,4 +131,5 @@ Karol J. Piczak. 2015. ESC: Dataset for Environmental Sound Classification. In P
 <a id="4">[4]</a> 
 Grais, E. M., & Plumbley, M. D. (2017, November). Single channel audio source separation using convolutional denoising autoencoders. In 2017 IEEE global conference on signal and information processing (GlobalSIP) (pp. 1265-1269). IEEE.
 
-
+<a id="5">[5]</a> 
+Karen Simonyan and Andrew Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. 2015. arXiv: 1409.1556 [cs.CV].

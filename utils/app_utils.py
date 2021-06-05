@@ -239,11 +239,11 @@ def model_denoising(filename, model_type='Unet'):
 def plot_spectrogram(stftaudio_magnitude_db, name, sample_rate=SAMPLE_RATE, hop_length_fft=HOP_LENGTH_FFT):
     """This function plots a spectrogram"""
 
-    n_len, width, height = stftaudio_magnitude_db.shape
-    if n_len == 1:
-        stftaudio_magnitude_db = stftaudio_magnitude_db[0]
-    else:
-        stftaudio_magnitude_db = stftaudio_magnitude_db.transpose([1,0,2]).reshape(height, width*n_len)
+    n_len = len(stftaudio_magnitude_db.shape)
+
+    if n_len == 3:
+        n, width, height = stftaudio_magnitude_db.shape
+        stftaudio_magnitude_db = stftaudio_magnitude_db.transpose([1,0,2]).reshape(height, width*n)
 
     fig = plt.Figure(figsize=(10, 4))
     canvas = FigureCanvas(fig)
@@ -274,9 +274,8 @@ def analyst_result(filename, m_amp_db, m_pha, pred_amp_db, X_denoise):
     plot_time_serie(UPLOAD_FOLDER+filename, 'noisy_time_serie.png')
 
     # recreate noise + noise analyst
-    # pred_amp_db = pred_amp_db[0,:,:]
     plot_spectrogram(pred_amp_db, 'noise_spec.png')
-    noise_audio = matrix_spectrogram_to_numpy_audio(pred_amp_db, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
+    # noise_audio = matrix_spectrogram_to_numpy_audio(pred_amp_db, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
 
     # output analyst
     plot_spectrogram(X_denoise, 'out_spec.png')

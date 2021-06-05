@@ -108,7 +108,8 @@ def main():
             new_clip = vid.set_audio(mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, file_name[:-3] + 'mp3')))
             new_clip.write_videofile(UPLOAD_FOLDER + 'out_' + file_name[:-3] + 'mp4')
 
-            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+            # out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+            out_audio_file = open(os.path.join(UPLOAD_FOLDER, 'out_' + file_name[:-3] + 'mp4'), 'rb')
             out_audio_bytes = out_audio_file.read()
             st.video(out_audio_bytes, format='video/mp4')
             

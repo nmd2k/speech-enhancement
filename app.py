@@ -18,7 +18,7 @@ def save_uploadedfile(uploadedfile, file_type):
 
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-        
+
     with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name),"wb") as f:
         f.write(uploadedfile.getbuffer())
     
@@ -71,24 +71,23 @@ def main():
             # st.error('An error occurred. Please try again later')
 
     if is_success:
-        st.header(':musical_note: Your processed audio/video')
-
         if 'audio' in uploaded_file.type:
             out_wav = file_name[:-3] + 'wav'
             out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{out_wav}'), 'rb')
             out_audio_bytes = out_audio_file.read()
+            st.header(':musical_note: Your processed audio/video')
             st.audio(out_audio_bytes, format='audio/wav')
 
         elif 'video' in uploaded_file.type:
-            vid =  mp.VideoFileClip(os.path.join(UPLOAD_FOLDER, file_name))
-
-            new_clip = vid.set_audio(mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, 'out_' + file_name[:-3] + 'wav')))
-
-            new_clip.write_videofile(UPLOAD_FOLDER + 'out_' + file_name[:-3] + 'mp4')
+            origin_vid =  mp.VideoFileClip(os.path.join(UPLOAD_FOLDER, file_name))
+            processed_audio = mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, f'out_{file_name[:-4]}.wav'))
+            processed_vid = origin_vid.set_audio(processed_audio)
+            processed_vid.write_videofile(UPLOAD_FOLDER + f'out_{file_name[:-4]}.mp4')
 
             # out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
-            out_audio_file = open(os.path.join(UPLOAD_FOLDER, 'out_' + file_name[:-3] + 'mp4'), 'rb')
+            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name[:-4]}.mp4'), 'rb')
             out_audio_bytes = out_audio_file.read()
+            st.header(':musical_note: Your processed audio/video')
             st.video(out_audio_bytes, format='video/mp4')
 
         st.subheader('Advanced details')

@@ -2,7 +2,7 @@
 
 <a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
 
-*In processing* <a href="#"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"></a> 
+<a href="https://share.streamlit.io/manhdung20112000/speech-enhancement/main/app.py"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"></a> 
 
 
 Table of Contents
@@ -64,6 +64,12 @@ Result
 Deployment
 =========
 To build a simple web application for demonstrate, we are using **Streamlit**, which is amazing tool for guys who don't know much about *html, css and so on*. With **Streamlit**, we can code our back-end with Python, which is very cool and easy to get started with.
+
+Streamlit share
+--------------
+We have publish
+
+
 
 To install **Streamlit** and orther dependencies, run:
 ```

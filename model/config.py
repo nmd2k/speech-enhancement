@@ -6,6 +6,7 @@ EPOCHS          = 10
 LEARNING_RATE   = 0.0001
 START_FRAME     = 16
 DROP_RATE       = 0.5
+REDUCE_RATE     = 0.8
 
 # Data config =======
 SAVE_PATH       = './model/'

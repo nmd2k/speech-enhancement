@@ -1,9 +1,10 @@
+import os
 import requests
 import numpy as np
 from PIL import Image
 import streamlit as st
 import soundfile as sf
-from utils.app_utils import *
+from utils.app_utils import model_denoising, analyst_result
 from model.config import *
 import subprocess
 
@@ -28,7 +29,6 @@ def main():
 
     if uploaded_file is not None:
         st.subheader('Input audio/video')
-        print(uploaded_file.type)
         if uploaded_file.type[:-4] == 'audio':
             audio_bytes = uploaded_file.read()
             st.audio(audio_bytes, format=uploaded_file.type)

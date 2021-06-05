@@ -1,4 +1,7 @@
 # Author: github.com/vbelz/Speech-enhancement
+from functools import reduce
+
+from librosa.core.spectrum import stft
 from model.model import UNet, UNet_ResNet
 import torch
 from torchvision import transforms
@@ -11,6 +14,7 @@ import numpy as np
 import soundfile as sf
 import streamlit as st
 import matplotlib.pyplot as plt
+# from utils.dataset import MelSpectrogram
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 def convertaudio_to_wav(filename):
@@ -137,9 +141,9 @@ def inv_scaled_in(matrix_spec):
     matrix_spec = matrix_spec * 50 - 46
     return matrix_spec
 
-def inv_scaled_ou(matrix_spec):
+def inv_scaled_ou(matrix_spec, reduce_rate):
     "inverse global scaling apply to noise models spectrograms"
-    matrix_spec = matrix_spec * 82 + 6
+    matrix_spec = matrix_spec * 82 * reduce_rate + 6
     return matrix_spec
 
 def model_denoising(filename, model_type='Unet'):
@@ -156,9 +160,7 @@ def model_denoising(filename, model_type='Unet'):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
     # transform
-    trans = transforms.ToTensor()
-
-    X_in = trans(scaled_in(m_amp_db[0, :])).unsqueeze(0).to(device, dtype=torch.float)
+    X_in = torch.from_numpy(scaled_in(m_amp_db)).unsqueeze(1).to(device, dtype=torch.float)
     
     if model_type == 'Unet':
         model = UNet(start_fm=32).to(device)
@@ -177,9 +179,9 @@ def model_denoising(filename, model_type='Unet'):
     model.eval()
     X_pred = model(X_in)
 
-    pred_amp_db = inv_scaled_ou(X_pred.detach().cpu().numpy())
+    pred_amp_db = inv_scaled_ou(X_pred.squeeze().detach().cpu().numpy(), REDUCE_RATE)
 
-    X_denoise = m_amp_db - pred_amp_db[0]
+    X_denoise = m_amp_db - pred_amp_db
 
     ou_audio = matrix_spectrogram_to_numpy_audio(X_denoise, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
 
@@ -189,12 +191,19 @@ def model_denoising(filename, model_type='Unet'):
 
     sf.write(UPLOAD_FOLDER + 'out_' + filename, denoise_long[0, :], SAMPLE_RATE)
 
-    return m_amp_db, m_pha, pred_amp_db, X_denoise 
+    return m_amp_db, m_pha, pred_amp_db, X_denoise
 
 
 def plot_spectrogram(stftaudio_magnitude_db, name, sample_rate=SAMPLE_RATE, hop_length_fft=HOP_LENGTH_FFT):
     """This function plots a spectrogram"""
-    fig = plt.Figure(figsize=(10, 4), dpi=100)
+
+    n_len, width, height = stftaudio_magnitude_db.shape
+    if n_len == 1:
+        stftaudio_magnitude_db = stftaudio_magnitude_db[0]
+    else:
+        stftaudio_magnitude_db = stftaudio_magnitude_db.transpose([1,0,2]).reshape(height, width*n_len)
+
+    fig = plt.Figure(figsize=(10, 4))
     canvas = FigureCanvas(fig)
     ax = fig.add_subplot(111)
     p = librosa.display.specshow(stftaudio_magnitude_db, ax=ax, x_axis='time', y_axis='log',
@@ -206,7 +215,7 @@ def plot_spectrogram(stftaudio_magnitude_db, name, sample_rate=SAMPLE_RATE, hop_
 
 def plot_time_serie(audio_path, name, sample_rate=SAMPLE_RATE):
     """This function plots the audio as a time serie"""
-    audio, sr = librosa.load(audio_path, sr=SAMPLE_RATE, duration=MIN_DURATION)
+    audio, sr = librosa.load(audio_path, sr=SAMPLE_RATE)
 
     fig = plt.Figure(figsize=(10, 4), dpi=100)
     canvas = FigureCanvas(fig)
@@ -219,20 +228,16 @@ def plot_time_serie(audio_path, name, sample_rate=SAMPLE_RATE):
 
 def analyst_result(filename, m_amp_db, m_pha, pred_amp_db, X_denoise):  
     # noisy analyst
-    plot_spectrogram(m_amp_db[0], 'noisy_spec.png')
+    plot_spectrogram(m_amp_db, 'noisy_spec.png')
     plot_time_serie(UPLOAD_FOLDER+filename, 'noisy_time_serie.png')
 
     # recreate noise + noise analyst
-    pred_amp_db = pred_amp_db[0,:,:]
-    plot_spectrogram(pred_amp_db[0], 'noise_spec.png')
+    # pred_amp_db = pred_amp_db[0,:,:]
+    plot_spectrogram(pred_amp_db, 'noise_spec.png')
     noise_audio = matrix_spectrogram_to_numpy_audio(pred_amp_db, m_pha, FRAME_LENGTH, HOP_LENGTH_FFT)
-    # nb_samples = noise_audio.shape[0]
-    # noise_long = noise_audio.reshape(1, nb_samples*FRAME_LENGTH)*10
-    # sf.write(UPLOAD_FOLDER + 'noise_' + filename, noise_long[0, :], SAMPLE_RATE)
-    # plot_time_serie(UPLOAD_FOLDER + 'noise_' + filename, 'noise_time_serie.png')
 
     # output analyst
-    plot_spectrogram(X_denoise[0], 'out_spec.png')
+    plot_spectrogram(X_denoise, 'out_spec.png')
     plot_time_serie(UPLOAD_FOLDER+'out_'+filename, 'out_time_serie.png')
     
     return

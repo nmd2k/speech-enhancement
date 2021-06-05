@@ -12,6 +12,7 @@ REDUCE_RATE     = 0.8
 SAVE_PATH       = './model/'
 DATA_PATH       = './data/'
 UPLOAD_FOLDER   = './uploads/'
+SUPPORT_FORMAT  = ['mp3', 'mp4', 'wav']
 
 NOISE_DOMAINS   = ['vacuum_cleaner', 'clapping', 'fireworks', 'door_wood_knock', 'engine', 'mouse_click', 
                     'clock_alarm', 'wind', 'keyboard_typing', 'footsteps', 'car_horn', 'drinking_sipping', 'snoring', 

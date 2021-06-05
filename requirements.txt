@@ -4,6 +4,7 @@ torchvision>=0.9.1
 librosa>=0.8.1
 pydub>=0.25.1
 pysoundfile
+moviepy
 
 # log experiment
 wandb

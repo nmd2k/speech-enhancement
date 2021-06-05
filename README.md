@@ -12,6 +12,8 @@ Table of Contents
 * [Training](#training)
 * [Result](#result)
 * [Deployment](#deployment)
+    * [Streamlit share](#streamlit-share)
+    * [Localhost run](#Localhost-run)
 * [Reference](#reference)
 
 Abstract
@@ -67,11 +69,13 @@ To build a simple web application for demonstrate, we are using **Streamlit**, w
 
 Streamlit share
 --------------
-We have publish
+We have deployed our application into **Streamlit.share**, in case the app is sleeping, that is because **Stream.share** limitation, just wake it up. Many thanks
 
+<a href="https://share.streamlit.io/manhdung20112000/speech-enhancement/main/app.py"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"></a>
 
-
-To install **Streamlit** and orther dependencies, run:
+Localhost run
+------------
+In order to run our application in your own machine or vitural machine, install **Streamlit** and orther dependencies, run:
 ```
 $ pip install -r requirements.txt
 ```

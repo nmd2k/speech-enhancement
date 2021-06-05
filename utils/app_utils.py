@@ -218,10 +218,10 @@ def model_denoising(filename, model_type='Unet'):
         except:
             st.error('Your weight are not found. Make sure the weight located in ./model')
 
-    model.eval()
-    X_pred = model(X_in)
+    with torch.no_grad():
+        X_pred = model(X_in)
 
-    pred_amp_db = inv_scaled_ou(X_pred.squeeze().detach().cpu().numpy(), REDUCE_RATE)
+        pred_amp_db = inv_scaled_ou(X_pred.squeeze().detach().cpu().numpy(), REDUCE_RATE)
 
     X_denoise = m_amp_db - pred_amp_db
 

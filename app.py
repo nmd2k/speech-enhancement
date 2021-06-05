@@ -1,3 +1,4 @@
+from re import S
 import requests
 import numpy as np
 from PIL import Image
@@ -11,9 +12,22 @@ import subprocess
 def load_session():
     return requests.Session()
 
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name),"wb") as f:
-        f.write(uploadedfile.getbuffer())
+def save_uploadedfile(uploadedfile, file_type):
+    filename = uploadedfile.name
+
+    if 'wav' not in filename:
+        with open(os.path.join(UPLOAD_FOLDER, filename),"wb") as f:
+        # with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name[:-3], 'wav'), "wb") as f:
+            f.write(uploadedfile.getbuffer())
+
+        # uploadedfile = os.path.join(UPLOAD_FOLDER, uploadedfile.name[:-3], 'wav')
+        # st.text(uploadedfile)
+
+    else:
+        with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name),"wb") as f:
+            f.write(uploadedfile.getbuffer())
+    
+    process_input_format(filename, file_type)
     # return st.success("Saved File:{} to tempDir".format(uploadedfile.name))
 
 def main():
@@ -22,53 +36,81 @@ def main():
 
     sess = load_session()
 
-    uploaded_file = st.file_uploader("Upload your audio/video:", type=['wav'])
+    uploaded_file = st.file_uploader("Upload your audio/video:", type=['wav', 'mp3', 'mp4'])
 
-    type = None
+    # type = None
+    file_type = ''
+    file_name = ''
+    file_format = ''
 
+    # Play uploaded file
     if uploaded_file is not None:
         st.subheader('Input audio/video')
-        print(uploaded_file.type)
-        if uploaded_file.type[:-4] == 'audio':
-            audio_bytes = uploaded_file.read()
-            st.audio(audio_bytes, format=uploaded_file.type)
-            type = 'audio'
 
-        elif uploaded_file.type[:-4] == 'video':
-            video_bytes = uploaded_file.read()
-            st.video(video_bytes)
-            st.error('You might end up with an error because we are not support Video format!')
-            type = 'video'
+        file_type = uploaded_file.type
+        file_name = uploaded_file.name
+        file_format = file_name[-3:]
+
+        if file_format not in SUPPORT_FORMAT:
+            st.error('We are not support this format yet!')
+
+        else:
+            play_file_uploaded(uploaded_file, file_type)
 
     col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.beta_columns([1,1,1,1,1,1,1,1,1,1,1])
     
     is_success=False
 
-    if type is not None and col6.button('Start reducing!'):
-        filename = uploaded_file.name
-
+    if uploaded_file is not None and col6.button('Start reducing!'):
         # save file to backend
-        save_uploadedfile(uploaded_file)
 
-        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(filename)
-        analyst_result(filename, m_amp_db, m_pha, pred_amp_db, X_denoise)
+        save_uploadedfile(uploaded_file, file_type)
+
+        # file_name = process_input_format(file_name, file_type)
+        file_name = file_name[:-3] + 'wav'
+
+        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(file_name)
+        analyst_result(file_name, m_amp_db, m_pha, pred_amp_db, X_denoise)
         is_success = True
         # except:
             # st.error('An error occurred. Please try again later')
 
     if is_success:
         st.header(':musical_note: Your processed audio/video')
-        
-        if uploaded_file.type[:-4] == 'audio':
-            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{filename}'), 'rb')
-            out_audio_bytes = out_audio_file.read()
 
-            st.audio(out_audio_bytes, format=uploaded_file.type)
+        out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+        out_audio_bytes = out_audio_file.read()
 
-        elif uploaded_file.type[:-4] == 'video':
-            st.error('Not supported yet')
-            pass
+        st.audio(out_audio_bytes, format='audio/wav')
         
+        # if uploaded_file.type[:-4] == 'audio':
+        #     out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{filename}'), 'rb')
+        #     out_audio_bytes = out_audio_file.read()
+
+        #     st.audio(out_audio_bytes, format=uploaded_file.type)
+
+        # elif uploaded_file.type[:-4] == 'video':
+        #     st.error('Not supported yet')
+        #     pass
+
+        # if 'audio' in uploaded_file.type:
+        #     out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+        #     out_audio_bytes = out_audio_file.read()
+        #     st.text(out_audio_bytes)
+        #     st.audio(out_audio_bytes, format='audio/wav')
+        # elif 'video' in uploaded_file.type:
+        #     st.text(file_name)
+
+        #     out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+        #     out_audio_bytes = out_audio_file.read()
+        #     st.text(out_audio_bytes)
+        #     st.audio(out_audio_bytes, format='audio/wav')
+            
+            # play_file_uploaded('out_' + file_name, 'wav')
+        # else:
+        #     st.error('Invalid file format!')
+        
+
         st.subheader('Advanced details')
         my_expander1 = st.beta_expander('Noisy speech')
         with my_expander1:

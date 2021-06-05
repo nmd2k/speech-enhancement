@@ -18,18 +18,9 @@ def save_uploadedfile(uploadedfile, file_type):
 
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-
-    if 'wav' not in filename:
-        with open(os.path.join(UPLOAD_FOLDER, filename),"wb") as f:
-        # with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name[:-3], 'wav'), "wb") as f:
-            f.write(uploadedfile.getbuffer())
-
-        # uploadedfile = os.path.join(UPLOAD_FOLDER, uploadedfile.name[:-3], 'wav')
-        # st.text(uploadedfile)
-
-    else:
-        with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name),"wb") as f:
-            f.write(uploadedfile.getbuffer())
+        
+    with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name),"wb") as f:
+        f.write(uploadedfile.getbuffer())
     
     process_input_format(filename, file_type)
     # return st.success("Saved File:{} to tempDir".format(uploadedfile.name))

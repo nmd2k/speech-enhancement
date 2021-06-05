@@ -16,6 +16,9 @@ def load_session():
 def save_uploadedfile(uploadedfile, file_type):
     filename = uploadedfile.name
 
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
     if 'wav' not in filename:
         with open(os.path.join(UPLOAD_FOLDER, filename),"wb") as f:
         # with open(os.path.join(UPLOAD_FOLDER, uploadedfile.name[:-3], 'wav'), "wb") as f:

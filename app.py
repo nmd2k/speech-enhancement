@@ -40,7 +40,7 @@ def main():
 
     sess = load_session()
 
-    uploaded_file = st.file_uploader("Upload your audio/video:", type=['wav', 'mp3', 'mp4'])
+    uploaded_file = st.file_uploader("Upload your audio/video:", type=SUPPORT_FORMAT)
 
     # type = None
     file_type = ''
@@ -82,21 +82,6 @@ def main():
     if is_success:
         st.header(':musical_note: Your processed audio/video')
 
-        # out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
-        # out_audio_bytes = out_audio_file.read()
-
-        # st.audio(out_audio_bytes, format='audio/wav')
-        
-        # if uploaded_file.type[:-4] == 'audio':
-        #     out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{filename}'), 'rb')
-        #     out_audio_bytes = out_audio_file.read()
-
-        #     st.audio(out_audio_bytes, format=uploaded_file.type)
-
-        # elif uploaded_file.type[:-4] == 'video':
-        #     st.error('Not supported yet')
-        #     pass
-
         if 'audio' in uploaded_file.type:
             out_wav = file_name[:-3] + 'wav'
             out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{out_wav}'), 'rb')
@@ -112,11 +97,6 @@ def main():
             out_audio_file = open(os.path.join(UPLOAD_FOLDER, 'out_' + file_name[:-3] + 'mp4'), 'rb')
             out_audio_bytes = out_audio_file.read()
             st.video(out_audio_bytes, format='video/mp4')
-            
-            # play_file_uploaded('out_' + file_name, 'wav')
-        # else:
-        #     st.error('Invalid file format!')
-        
 
         st.subheader('Advanced details')
         my_expander1 = st.beta_expander('Noisy speech')

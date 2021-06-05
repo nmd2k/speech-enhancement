@@ -245,7 +245,7 @@ def plot_spectrogram(stftaudio_magnitude_db, name, sample_rate=SAMPLE_RATE, hop_
         n, width, height = stftaudio_magnitude_db.shape
         stftaudio_magnitude_db = stftaudio_magnitude_db.transpose([1,0,2]).reshape(height, width*n)
 
-    fig = plt.Figure(figsize=(10, 4))
+    fig = plt.Figure(figsize=(10, 4), dpi=100)
     canvas = FigureCanvas(fig)
     ax = fig.add_subplot(111)
     p = librosa.display.specshow(stftaudio_magnitude_db, ax=ax, x_axis='time', y_axis='linear',

@@ -6,7 +6,8 @@ pydub>=0.25.1
 pysoundfile
 moviepy
 
-# log experiment
+# log experiment & plot
+matplotlib
 wandb
 
 # web deployment

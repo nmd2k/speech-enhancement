@@ -248,7 +248,7 @@ def plot_spectrogram(stftaudio_magnitude_db, name, sample_rate=SAMPLE_RATE, hop_
     fig = plt.Figure(figsize=(10, 4))
     canvas = FigureCanvas(fig)
     ax = fig.add_subplot(111)
-    p = librosa.display.specshow(stftaudio_magnitude_db, ax=ax, x_axis='time', y_axis='log',
+    p = librosa.display.specshow(stftaudio_magnitude_db, ax=ax, x_axis='time', y_axis='linear',
                              sr=sample_rate, hop_length=hop_length_fft)
     plt.colorbar(p, ax=ax)
 

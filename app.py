@@ -7,7 +7,7 @@ import streamlit as st
 import soundfile as sf
 from utils.app_utils import model_denoising, analyst_result, play_file_uploaded, process_input_format
 from model.config import *
-import subprocess
+import moviepy.editor as mp
 
 @st.cache(allow_output_mutation=True)
 def load_session():
@@ -71,10 +71,10 @@ def main():
         save_uploadedfile(uploaded_file, file_type)
 
         # file_name = process_input_format(file_name, file_type)
-        file_name = file_name[:-3] + 'wav'
+        # file_name = file_name[:-3] + 'wav'
 
-        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(file_name)
-        analyst_result(file_name, m_amp_db, m_pha, pred_amp_db, X_denoise)
+        m_amp_db, m_pha, pred_amp_db, X_denoise = model_denoising(file_name[:-3] + 'wav')
+        analyst_result(file_name[:-3] + 'wav', m_amp_db, m_pha, pred_amp_db, X_denoise)
         is_success = True
         # except:
             # st.error('An error occurred. Please try again later')
@@ -82,10 +82,20 @@ def main():
     if is_success:
         st.header(':musical_note: Your processed audio/video')
 
-        out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
-        out_audio_bytes = out_audio_file.read()
+        if 'audio' in uploaded_file.type:
+            out_wav = file_name[:-3] + 'wav'
+            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{out_wav}'), 'rb')
+            out_audio_bytes = out_audio_file.read()
+            st.audio(out_audio_bytes, format='audio/wav')
 
-        st.audio(out_audio_bytes, format='audio/wav')
+        elif 'video' in uploaded_file.type:
+            vid =  mp.VideoFileClip(os.path.join(UPLOAD_FOLDER, file_name))
+            new_clip = vid.set_audio(mp.AudioFileClip(os.path.join(UPLOAD_FOLDER, file_name[:-3] + 'mp3')))
+            new_clip.write_videofile(UPLOAD_FOLDER + 'out_' + file_name[:-3] + 'mp4')
+
+            out_audio_file = open(os.path.join(UPLOAD_FOLDER, f'out_{file_name}'), 'rb')
+            out_audio_bytes = out_audio_file.read()
+            st.video(out_audio_bytes, format='video/mp4')
 
         st.subheader('Advanced details')
         my_expander1 = st.beta_expander('Noisy speech')

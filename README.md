@@ -69,7 +69,7 @@ Inorder to take input as mel spectrogram image of audio and output as mel spectr
 
 The original U-net's only contains convolutional and deconvolutional (transpose convolutional). In this project, inspired by the architecture of residual block [[5]](#5), we attempt to introduce some new skip connection to the Unet architecture. The architecture of the Unet based Resnet is shown below:
 
-<img src="source/Unet_ResNet.png" alt="Unet for denoise spectrograms" title="Speech enhancement"/>
+<img src="source/Unet_Resnet.png" alt="Unet for denoise spectrograms" title="Speech enhancement"/>
 
 However, experimence showed some downside while using this architecture than the original. We are still researching deeper into this Unet based Resnet model and the process is not finished yet. **Therefore, use at your own risk.** 
 
@@ -127,7 +127,7 @@ $ streamlit run app.py
 ```
 
 After that, if you see the same thing as in this video, you are go to go.
-[![video-demo](source/Demo-cover.png)](https://youtu.be/kKOSrEUSsVc)
+[![video-demo](source/Demo-cover.png)](https://youtu.be/gzXcjEgXLno)
 
 
 

@@ -99,7 +99,7 @@ With the hyperparameter from tuning process, we have train 2 model with the conf
 
 |             | Start frame | Batch size | Learning rate | Dropout rate | Params<br>(M)   | IoU<sup>train | IoU<sup>val |
 |-------------|-------------|------------|---------------|--------------|-----------------|-----------|----------|
-| Unet        | 32          | 8         | 0.0000826     | -            | 2.86            | 51.14     | **46.14**|
+| Unet        | 32          | 8         | 0.0000826     | -            | 7.76            | 51.14     | **46.14**|
 | Unet Resnet | 16          | 8         | 0.0001416     | 0.3          | 7.08            | 41.0      | 44.14    |
 
 Deployment

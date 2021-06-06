@@ -10,6 +10,7 @@ Table of Contents
 * [Abstract](#abstract)
 * [Dataset](#dataset)
 * [Training](#training)
+* [Experiment tracking & Tuning hyperparameter](#experiment-tracking-&-tuning-hyperparameter)
 * [Result](#result)
 * [Deployment](#deployment)
     * [Streamlit share](#streamlit-share)
@@ -70,13 +71,36 @@ The original U-net's only contains convolutional and deconvolutional (transpose 
 
 <img src="source/Unet_ResNet.png" alt="Unet for denoise spectrograms" title="Speech enhancement"/>
 
-However, experimence showed some downside while using this architecture than the original. We are still researching deeper into this Unet based Resnet model and the process is not finished yet. **Therefore, use at your own risk.**
+However, experimence showed some downside while using this architecture than the original. We are still researching deeper into this Unet based Resnet model and the process is not finished yet. **Therefore, use at your own risk.** 
 
+Experiment tracking & Tuning hyperparameter
+==================
+For tracking experiment, we used an awesome tool named Weight & Bias [(W&B)](https://docs.wandb.ai/). W&B provided us a stuning dashboard for loging data while training, tracking experiment realtime ☕.
 
+<img src="source/exp_tracking.png" alt="W&B tracking experiment" title="Speech enhancement"/>
+
+Once a again, we *highly encourage* you to take a look at our project workspace inorder to see more about our training process:
+
+<a href="https://wandb.ai/nmd2000/Speech-enhancement/"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="Visualize in WB"></a>
+
+Weight & Bias also provided a tool named `Sweep` for us to tuning our hyperparameter. The tool corresponsed to start some runs and search for better hyperparameter inorder to maximize or minimize our configed goal. Therefore, we initialized 2 sweep for each model (U-net and U-net Res) to maximize their `Valid IoU`. 
+
+<img src="source/sweep.png" alt="Tuning hyperparameter" title="Speech enhancement"/>
+
+*Hyperparameter tuning for U-net Res*
 
 Result
 ======
+While you are training, your W&B dashboard might log somet image like shown. This is mel spectrogram of the data that input and output in your model. From `left` to `right`, the 1st is the spectrogram of **noisy audio**, the 2nd is the spectrogram of **noise ground truth**, the 3rd is our model *prediction*.
 
+<img src="source/training_example.png" alt="Tuning hyperparameter" title="Speech enhancement"/>
+
+With the hyperparameter from tuning process, we have train 2 model with the config as shown:
+
+|             | Start frame | Batch size | Learning rate | Dropout rate | Params<br>(M)   | IoU<sup>train | IoU<sup>val |
+|-------------|-------------|------------|---------------|--------------|-----------------|-----------|----------|
+| Unet        | 32          | 8         | 0.0000826     | -            | 2.86            | 51.14     | **46.14**|
+| Unet Resnet | 16          | 8         | 0.0001416     | 0.3          | 7.08            | 41.0      | 44.14    |
 
 Deployment
 =========

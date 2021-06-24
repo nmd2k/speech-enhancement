@@ -73,6 +73,23 @@ The original U-net's only contains convolutional and deconvolutional (transpose 
 
 However, experimence showed some downside while using this architecture than the original. We are still researching deeper into this Unet based Resnet model and the process is not finished yet. **Therefore, use at your own risk.** 
 
+🚀 To recreate our experiments, train a model with specific model, learning rate, dropout rate, ... by running:
+```
+$ python train.py [--args config]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --run RUN             run name
+  --model MODEL         initial weights path
+  --dropout DROPOUT     declear dropout rate
+  --epoch EPOCH         number of epoch
+  --startfm STARTFM     architecture start frame
+  --batchsize BATCHSIZE
+                        total batch size for all GPUs (default:
+  --lr LR               learning rate (default: 0.0001)
+  --tuning              no plot image for tuning
+```
+
 Experiment tracking & Tuning hyperparameter
 ==================
 For tracking experiment, we used an awesome tool named Weight & Bias [(W&B)](https://docs.wandb.ai/). W&B provided us a stuning dashboard for loging data while training, tracking experiment realtime ☕.

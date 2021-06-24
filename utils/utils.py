@@ -1,4 +1,4 @@
-from model.config import CLASSES, SAVE_PATH
+from model.config import SAVE_PATH
 import wandb
 import numpy as np
 import torch

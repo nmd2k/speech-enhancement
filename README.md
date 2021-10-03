@@ -143,7 +143,7 @@ To run app **Streamlit**, run:
 $ streamlit run app.py
 ```
 
-After that, if you see the same thing as in this video, you are go to go.
+After that, if you see the same thing as in this video, you are good to go.
 [![video-demo](source/Demo-cover.png)](https://youtu.be/gzXcjEgXLno)
 
 

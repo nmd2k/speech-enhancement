@@ -1,5 +1,5 @@
 libsndfile1
-libglib-2.0
+libglib2.0-dev
 libgl1-mesa-glx
 ffmpeg
 htop
